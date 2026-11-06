@@ -1,0 +1,68 @@
+'use client';
+
+import { createContext, use, useCallback, useMemo, useRef, useState, type ReactNode } from 'react';
+
+type TipoToast = 'sucesso' | 'erro';
+type Toast = { id: number; tipo: TipoToast; mensagem: string };
+type ContextoToast = { mostrar: (tipo: TipoToast, mensagem: string) => void };
+
+const DURACAO_MS = 6000;
+
+const Contexto = createContext<ContextoToast | null>(null);
+
+export function useToast(): ContextoToast {
+  const contexto = use(Contexto);
+  if (!contexto) throw new Error('useToast precisa estar dentro de ToastProvider');
+  return contexto;
+}
+
+export function ToastProvider({ children }: { children: ReactNode }) {
+  const [toasts, setToasts] = useState<Toast[]>([]);
+  const proximoId = useRef(0);
+
+  const remover = useCallback((id: number) => {
+    setToasts((atuais) => atuais.filter((t) => t.id !== id));
+  }, []);
+
+  const mostrar = useCallback(
+    (tipo: TipoToast, mensagem: string) => {
+      const id = proximoId.current++;
+      setToasts((atuais) => [...atuais, { id, tipo, mensagem }]);
+      setTimeout(() => remover(id), DURACAO_MS);
+    },
+    [remover],
+  );
+
+  const valor = useMemo(() => ({ mostrar }), [mostrar]);
+
+  return (
+    <Contexto value={valor}>
+      {children}
+      {/* A região fica sempre no DOM para os leitores de tela anunciarem as mudanças. */}
+      <div
+        aria-live="polite"
+        className="pointer-events-none fixed inset-x-4 bottom-4 z-50 flex flex-col items-center gap-2 sm:left-auto sm:w-96"
+      >
+        {toasts.map((toast) => (
+          <div
+            key={toast.id}
+            role={toast.tipo === 'erro' ? 'alert' : 'status'}
+            className={`pointer-events-auto flex w-full items-start justify-between gap-3 rounded-md px-4 py-3 text-sm text-white shadow-lg ${
+              toast.tipo === 'erro' ? 'bg-red-800' : 'bg-emerald-900'
+            }`}
+          >
+            <span>{toast.mensagem}</span>
+            <button
+              type="button"
+              aria-label="Fechar aviso"
+              onClick={() => remover(toast.id)}
+              className="rounded px-1 leading-none"
+            >
+              <span aria-hidden="true">×</span>
+            </button>
+          </div>
+        ))}
+      </div>
+    </Contexto>
+  );
+}
