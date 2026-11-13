@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { useState, type ReactNode } from 'react';
+import { Suspense, useState, type ReactNode } from 'react';
 import { LinkBotao } from '@/components/ui/Button';
 
 const LINKS = [
@@ -14,6 +14,40 @@ const LINKS = [
   { href: '/privacidade', rotulo: 'Privacidade' },
 ];
 
+type ListaLinksProps = {
+  /** Caminho atual, para destacar o link ativo. */
+  caminho?: string;
+  onNavegar: () => void;
+};
+
+function ListaLinks({ caminho, onNavegar }: ListaLinksProps) {
+  return (
+    <ul className="flex flex-col gap-1">
+      {LINKS.map(({ href, rotulo }) => {
+        const ativo = caminho === href || caminho?.startsWith(`${href}/`);
+        return (
+          <li key={href}>
+            <Link
+              href={href}
+              aria-current={ativo ? 'page' : undefined}
+              onClick={onNavegar}
+              className={`block rounded-md px-3 py-2 ${
+                ativo ? 'bg-slate-200 font-medium' : 'hover:bg-slate-100'
+              }`}
+            >
+              {rotulo}
+            </Link>
+          </li>
+        );
+      })}
+    </ul>
+  );
+}
+
+function ListaLinksComAtivo({ onNavegar }: Pick<ListaLinksProps, 'onNavegar'>) {
+  return <ListaLinks caminho={usePathname()} onNavegar={onNavegar} />;
+}
+
 type AppShellProps = {
   /** Nome do usuário e botão sair. */
   rodapeMenu: ReactNode;
@@ -21,8 +55,8 @@ type AppShellProps = {
 };
 
 export function AppShell({ rodapeMenu, children }: AppShellProps) {
-  const caminho = usePathname();
   const [menuAberto, setMenuAberto] = useState(false);
+  const fecharMenu = () => setMenuAberto(false);
 
   return (
     <div className="flex min-h-dvh flex-col">
@@ -61,25 +95,10 @@ export function AppShell({ rodapeMenu, children }: AppShellProps) {
           className={`${menuAberto ? 'flex' : 'hidden'} flex-col gap-4 border-b border-slate-300 bg-white p-4 md:flex md:w-60 md:shrink-0 md:border-b-0 md:border-r`}
         >
           <nav aria-label="Principal">
-            <ul className="flex flex-col gap-1">
-              {LINKS.map(({ href, rotulo }) => {
-                const ativo = caminho === href || caminho.startsWith(`${href}/`);
-                return (
-                  <li key={href}>
-                    <Link
-                      href={href}
-                      aria-current={ativo ? 'page' : undefined}
-                      onClick={() => setMenuAberto(false)}
-                      className={`block rounded-md px-3 py-2 ${
-                        ativo ? 'bg-slate-200 font-medium' : 'hover:bg-slate-100'
-                      }`}
-                    >
-                      {rotulo}
-                    </Link>
-                  </li>
-                );
-              })}
-            </ul>
+            {/* Em rotas dinâmicas, o caminho só existe em tempo de execução. */}
+            <Suspense fallback={<ListaLinks onNavegar={fecharMenu} />}>
+              <ListaLinksComAtivo onNavegar={fecharMenu} />
+            </Suspense>
           </nav>
           <div className="flex flex-col gap-3 border-t border-slate-300 pt-4 md:mt-auto">{rodapeMenu}</div>
         </aside>

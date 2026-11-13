@@ -6,7 +6,9 @@
     "dev": "next dev -p 3001",
     "build": "next build",
     "start": "next start -p 3001",
-    "lint": "eslint"
+    "lint": "eslint",
+    "demo:criar": "node --env-file=.env.local scripts/demo.mjs criar",
+    "demo:remover": "node --env-file=.env.local scripts/demo.mjs remover"
   },
   "dependencies": {
     "@hookform/resolvers": "^7.0.3",

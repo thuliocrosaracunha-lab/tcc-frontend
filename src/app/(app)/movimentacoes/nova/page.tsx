@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { Suspense } from 'react';
+import { criarMovimentacao } from '@/actions/movimentacoes';
 import { MovimentacaoForm } from '@/components/forms/MovimentacaoForm';
 import { LinkBotao } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
@@ -25,7 +26,12 @@ async function Formulario() {
 
   return (
     <Card>
-      <MovimentacaoForm categorias={categorias} hoje={hojeIso()} />
+      <MovimentacaoForm
+        categorias={categorias}
+        acao={criarMovimentacao}
+        destino="/movimentacoes"
+        valoresIniciais={{ tipo: 'saida', categoriaId: '', valor: '', data: hojeIso(), descricao: '' }}
+      />
     </Card>
   );
 }

@@ -26,6 +26,12 @@ export async function criarSessao(token: string, usuario: Usuario): Promise<void
   loja.set(COOKIE_USUARIO, JSON.stringify(usuario), OPCOES_COOKIE);
 }
 
+/** Atualiza os dados exibidos após editar o perfil. O JWT continua válido, pois depende só do id. */
+export async function atualizarUsuarioDaSessao(usuario: Usuario): Promise<void> {
+  const loja = await cookies();
+  loja.set(COOKIE_USUARIO, JSON.stringify(usuario), OPCOES_COOKIE);
+}
+
 /** Só funciona em Server Actions e Route Handlers. */
 export async function encerrarSessao(): Promise<void> {
   const loja = await cookies();

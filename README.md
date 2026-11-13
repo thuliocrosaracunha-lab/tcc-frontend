@@ -24,6 +24,17 @@ A aplicação abre em <http://localhost:3001>. A porta 3000 fica reservada para 
 | `npm start` | Executa o build de produção na porta 3001 |
 | `npm run lint` | Verificação com ESLint |
 
+## Conta de demonstração
+
+Com o backend rodando, `npm run demo:criar` cria uma conta pronta para testes manuais:
+
+- **Acesso:** `demo@example.com`, senha `demo123`.
+- **Movimentações:** 23, distribuídas entre o mês atual e os dois anteriores.
+- **Metas:** 4, uma em cada status.
+- **Categorias:** só são criadas as que ainda não existem.
+
+`npm run demo:remover` apaga a conta, as movimentações e as metas, além das categorias que o script criou, registradas em `.demo.json`. Categorias que já existiam não são tocadas, porque são compartilhadas entre os usuários.
+
 ## Variáveis de ambiente
 
 | Variável | Exemplo | Descrição |
@@ -61,5 +72,6 @@ src/
 - **Resposta 401 da API:** como Server Components não podem apagar cookies, o cliente HTTP redireciona para `/sessao-expirada`, que os apaga e leva ao login. O 401 de senha incorreta no login é tratado à parte e aparece como erro no formulário.
 - **Fim de sessão com recarga completa:** logout, sessão expirada e exclusão de conta passam por `/login?encerrar=<motivo>`, que recarrega a página. Com Cache Components, o Next mantém as páginas visitadas ocultas no navegador, e a recarga descarta os dados financeiros que ficariam em memória.
 - **Cache Components:** cookies e dados são lidos dentro de `<Suspense>`. Assim, a estrutura da página é entregue de imediato e os dados chegam em seguida.
+- **Filtros na URL:** os filtros de movimentações ficam na query string. Voltar, recarregar e compartilhar o link preservam a busca, e a edição devolve à mesma lista filtrada. O destino é remontado a partir de valores validados, nunca lido diretamente da URL.
 - **Validação em dois pontos:** o mesmo schema Zod roda no navegador e novamente na Server Action, com as mesmas regras do backend.
 - **Erros como valor:** as Server Actions retornam `ResultadoAcao`, porque mensagens de exceções lançadas ficam ocultas em produção.

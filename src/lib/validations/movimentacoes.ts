@@ -21,12 +21,15 @@ export const criarMovimentacaoSchema = base;
 
 export const atualizarMovimentacaoSchema = base.partial().refine(algumCampo, MSG_NENHUM_CAMPO);
 
+// Campo em branco no formulário ou na URL significa "sem este filtro".
+const vazioComoAusente = (entrada: unknown) => (entrada === '' ? undefined : entrada);
+
 export const filtrosMovimentacaoSchema = z
   .object({
-    inicio: data.optional(),
-    fim: data.optional(),
-    categoriaId: id.optional(),
-    tipo: tipo.optional(),
+    inicio: z.preprocess(vazioComoAusente, data.optional()),
+    fim: z.preprocess(vazioComoAusente, data.optional()),
+    categoriaId: z.preprocess(vazioComoAusente, id.optional()),
+    tipo: z.preprocess(vazioComoAusente, tipo.optional()),
   })
   .refine((f) => !f.inicio || !f.fim || f.inicio <= f.fim, {
     error: 'A data inicial deve ser anterior ou igual à final',

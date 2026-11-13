@@ -5,30 +5,48 @@ import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import type { z } from 'zod';
-import { criarMovimentacao } from '@/actions/movimentacoes';
 import { Alert } from '@/components/ui/Alert';
-import { Button } from '@/components/ui/Button';
+import { Button, LinkBotao } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { Select } from '@/components/ui/Select';
 import { useToast } from '@/components/ui/Toast';
 import { ROTULOS_TIPO } from '@/lib/format';
 import { TIPOS } from '@/lib/validations/comum';
 import { criarMovimentacaoSchema } from '@/lib/validations/movimentacoes';
-import type { Categoria, Tipo } from '@/types';
+import type { Categoria, ResultadoAcao, Tipo } from '@/types';
 import { enviarAcao } from './enviar-acao';
 
-type Entrada = z.input<typeof criarMovimentacaoSchema>;
+type Saida = z.output<typeof criarMovimentacaoSchema>;
+
+export type ValoresMovimentacao = {
+  tipo: Tipo;
+  categoriaId: string;
+  valor: string;
+  /** AAAA-MM-DD */
+  data: string;
+  descricao: string;
+};
 
 type MovimentacaoFormProps = {
   categorias: Categoria[];
-  /** Data inicial do formulário, em AAAA-MM-DD. */
-  hoje: string;
+  valoresIniciais: ValoresMovimentacao;
+  acao: (dados: Partial<Saida>) => Promise<ResultadoAcao>;
+  /** Na edição, envia só o que mudou (PATCH parcial). */
+  edicao?: boolean;
+  /** Para onde voltar ao salvar ou cancelar. */
+  destino: string;
 };
 
-export function MovimentacaoForm({ categorias, hoje }: MovimentacaoFormProps) {
+export function MovimentacaoForm({
+  categorias,
+  valoresIniciais,
+  acao,
+  edicao = false,
+  destino,
+}: MovimentacaoFormProps) {
   const router = useRouter();
   const { mostrar } = useToast();
-  const [tipo, setTipo] = useState<Tipo>('saida');
+  const [tipo, setTipo] = useState<Tipo>(valoresIniciais.tipo);
 
   const {
     register,
@@ -36,21 +54,41 @@ export function MovimentacaoForm({ categorias, hoje }: MovimentacaoFormProps) {
     setError,
     setValue,
     reset,
-    formState: { errors, isSubmitting },
-  } = useForm<Entrada, unknown, z.output<typeof criarMovimentacaoSchema>>({
+    formState: { errors, isSubmitting, dirtyFields },
+  } = useForm<z.input<typeof criarMovimentacaoSchema>, unknown, Saida>({
     resolver: zodResolver(criarMovimentacaoSchema),
-    defaultValues: { categoriaId: '', valor: '', data: hoje, descricao: '' },
+    defaultValues: {
+      categoriaId: valoresIniciais.categoriaId,
+      valor: valoresIniciais.valor,
+      data: valoresIniciais.data,
+      descricao: valoresIniciais.descricao,
+    },
   });
 
   const categoriasDoTipo = categorias.filter((categoria) => categoria.tipo === tipo);
 
   function trocarTipo(novoTipo: Tipo) {
+    // O tipo vem da categoria: ao trocar, é preciso escolher uma categoria do novo tipo.
     setTipo(novoTipo);
-    setValue('categoriaId', '');
+    setValue('categoriaId', '', { shouldDirty: true });
   }
 
-  async function enviar(dados: z.output<typeof criarMovimentacaoSchema>) {
-    const resultado = await enviarAcao(() => criarMovimentacao(dados), setError, [
+  async function enviar(dados: Saida) {
+    const corpo: Partial<Saida> = edicao
+      ? {
+          ...(dirtyFields.categoriaId && { categoriaId: dados.categoriaId }),
+          ...(dirtyFields.valor && { valor: dados.valor }),
+          ...(dirtyFields.data && { data: dados.data }),
+          ...(dirtyFields.descricao && { descricao: dados.descricao }),
+        }
+      : dados;
+
+    if (Object.keys(corpo).length === 0) {
+      setError('root', { message: 'Nenhuma alteração para salvar.' });
+      return;
+    }
+
+    const resultado = await enviarAcao(() => acao(corpo), setError, [
       'categoriaId',
       'valor',
       'data',
@@ -60,7 +98,8 @@ export function MovimentacaoForm({ categorias, hoje }: MovimentacaoFormProps) {
       mostrar('sucesso', resultado.mensagem);
       // A página fica preservada ao navegar: cada novo registro começa do zero.
       reset();
-      router.push('/movimentacoes');
+      setTipo(valoresIniciais.tipo);
+      router.push(destino);
     }
   }
 
@@ -114,9 +153,14 @@ export function MovimentacaoForm({ categorias, hoje }: MovimentacaoFormProps) {
         {...register('descricao')}
       />
 
-      <Button type="submit" carregando={isSubmitting}>
-        {isSubmitting ? 'Salvando…' : 'Salvar movimentação'}
-      </Button>
+      <div className="flex flex-wrap gap-2">
+        <Button type="submit" carregando={isSubmitting}>
+          {isSubmitting ? 'Salvando…' : edicao ? 'Salvar alterações' : 'Salvar movimentação'}
+        </Button>
+        <LinkBotao href={destino} variante="secundario">
+          Cancelar
+        </LinkBotao>
+      </div>
     </form>
   );
 }

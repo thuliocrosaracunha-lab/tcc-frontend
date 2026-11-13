@@ -3,6 +3,7 @@ import { redirect } from 'next/navigation';
 import { Suspense } from 'react';
 import { excluirConta } from '@/actions/usuarios';
 import { BotaoExcluir } from '@/components/forms/BotaoExcluir';
+import { PerfilForm } from '@/components/forms/PerfilForm';
 import { Card } from '@/components/ui/Card';
 import { Carregando } from '@/components/ui/Carregando';
 import { buscarUsuario } from '@/lib/api/usuarios';
@@ -19,16 +20,8 @@ async function Dados() {
 
   return (
     <Card>
-      <dl className="flex flex-col gap-3">
-        <div>
-          <dt className="text-sm text-slate-700">Nome</dt>
-          <dd className="font-medium break-words">{usuario.nome}</dd>
-        </div>
-        <div>
-          <dt className="text-sm text-slate-700">E-mail</dt>
-          <dd className="font-medium break-words">{usuario.email}</dd>
-        </div>
-      </dl>
+      {/* A página fica preservada ao navegar: a key recria o formulário quando os dados mudam. */}
+      <PerfilForm key={`${usuario.nome}|${usuario.email}`} usuario={usuario} />
     </Card>
   );
 }
