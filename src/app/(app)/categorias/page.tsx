@@ -3,6 +3,7 @@ import { Suspense } from 'react';
 import { excluirCategoria } from '@/actions/categorias';
 import { BotaoExcluir } from '@/components/forms/BotaoExcluir';
 import { CategoriaForm } from '@/components/forms/CategoriaForm';
+import { LinkBotao } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
 import { Carregando } from '@/components/ui/Carregando';
 import { EmptyState } from '@/components/ui/EmptyState';
@@ -31,12 +32,21 @@ async function Lista() {
             <span className="block font-medium break-words">{categoria.nome}</span>
             <span className="block text-sm text-slate-700">{ROTULOS_TIPO[categoria.tipo]}</span>
           </span>
-          <BotaoExcluir
-            acao={excluirCategoria.bind(null, categoria.id)}
-            rotulo={`Excluir categoria ${categoria.nome}`}
-            titulo="Excluir categoria?"
-            descricao={`A categoria "${categoria.nome}" é compartilhada entre os usuários e será removida para todos.`}
-          />
+          <div className="flex shrink-0 gap-2">
+            <LinkBotao
+              variante="secundario"
+              href={`/categorias/${categoria.id}/editar`}
+              aria-label={`Editar categoria ${categoria.nome}`}
+            >
+              Editar
+            </LinkBotao>
+            <BotaoExcluir
+              acao={excluirCategoria.bind(null, categoria.id)}
+              rotulo={`Excluir categoria ${categoria.nome}`}
+              titulo="Excluir categoria?"
+              descricao={`A categoria "${categoria.nome}" é compartilhada entre os usuários e será removida para todos.`}
+            />
+          </div>
         </li>
       ))}
     </ul>

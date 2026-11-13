@@ -36,13 +36,17 @@ function Tabela({ movimentacoes, query }: { movimentacoes: Movimentacao[]; query
           {movimentacoes.map((movimentacao) => {
             const data = formatarData(movimentacao.data);
             const valor = formatarMoeda(movimentacao.valor);
+            // O sinal indica receita ou despesa sem depender só da coluna Tipo ou de cor.
+            const sinal = movimentacao.categoria.tipo === 'entrada' ? '+' : '−';
             return (
               <tr key={movimentacao.id} className="border-b border-slate-200 last:border-0">
                 <td className="whitespace-nowrap p-3">{data}</td>
                 <td className="p-3">{movimentacao.descricao ?? '—'}</td>
                 <td className="p-3">{movimentacao.categoria.nome}</td>
                 <td className="p-3">{ROTULOS_TIPO[movimentacao.categoria.tipo]}</td>
-                <td className="whitespace-nowrap p-3 text-right">{valor}</td>
+                <td className="whitespace-nowrap p-3 text-right tabular-nums">
+                  {sinal} {valor}
+                </td>
                 <td className="p-3">
                   <div className="flex justify-end gap-2">
                     {/* A query mantém os filtros ao voltar da edição. */}

@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { connection } from 'next/server';
 import { Suspense } from 'react';
+import { BarrasPorCategoria, COR_DESPESAS, COR_RECEITAS } from '@/components/charts/BarrasPorCategoria';
 import { Card } from '@/components/ui/Card';
 import { Carregando } from '@/components/ui/Carregando';
 import { LinkBotao } from '@/components/ui/Button';
@@ -51,6 +52,28 @@ async function Resumo() {
           <Indicador rotulo="Receitas" valor={doMes.periodo.totalEntradas} />
           <Indicador rotulo="Despesas" valor={doMes.periodo.totalSaidas} />
           <Indicador rotulo="Saldo do período" valor={doMes.periodo.saldo} />
+        </div>
+      </section>
+      {/* RF015: distribuição por categoria no mesmo período dos totais acima. */}
+      <section className="flex flex-col gap-3">
+        <h2 className="text-lg font-semibold">Por categoria</h2>
+        <div className="grid gap-4 lg:grid-cols-2">
+          <Card>
+            <BarrasPorCategoria
+              titulo="Despesas do mês"
+              categorias={doMes.porCategoria.saidas}
+              cor={COR_DESPESAS}
+              vazio="Nenhuma despesa registrada neste mês."
+            />
+          </Card>
+          <Card>
+            <BarrasPorCategoria
+              titulo="Receitas do mês"
+              categorias={doMes.porCategoria.entradas}
+              cor={COR_RECEITAS}
+              vazio="Nenhuma receita registrada neste mês."
+            />
+          </Card>
         </div>
       </section>
     </div>

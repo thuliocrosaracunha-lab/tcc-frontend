@@ -1,48 +1,78 @@
 'use client';
 
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import type { z } from 'zod';
 import { criarCategoria } from '@/actions/categorias';
 import { Alert } from '@/components/ui/Alert';
-import { Button } from '@/components/ui/Button';
+import { Button, LinkBotao } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { Select } from '@/components/ui/Select';
 import { useToast } from '@/components/ui/Toast';
 import { ROTULOS_TIPO } from '@/lib/format';
 import { TIPOS } from '@/lib/validations/comum';
 import { criarCategoriaSchema } from '@/lib/validations/categorias';
+import type { ResultadoAcao, Tipo } from '@/types';
 import { enviarAcao } from './enviar-acao';
 
-type Entrada = z.input<typeof criarCategoriaSchema>;
+type Saida = z.output<typeof criarCategoriaSchema>;
 
-export function CategoriaForm() {
+type CategoriaFormProps =
+  | { edicao?: false }
+  | {
+      /** Edição: envia só o que mudou e volta para a lista. */
+      edicao: true;
+      valoresIniciais: { nome: string; tipo: Tipo };
+      acao: (dados: Partial<Saida>) => Promise<ResultadoAcao>;
+    };
+
+export function CategoriaForm(props: CategoriaFormProps) {
+  const router = useRouter();
   const { mostrar } = useToast();
   const {
     register,
     handleSubmit,
     setError,
     reset,
-    formState: { errors, isSubmitting },
-  } = useForm<Entrada, unknown, z.output<typeof criarCategoriaSchema>>({
+    formState: { errors, isSubmitting, dirtyFields },
+  } = useForm<z.input<typeof criarCategoriaSchema>, unknown, Saida>({
     resolver: zodResolver(criarCategoriaSchema),
-    defaultValues: { nome: '', tipo: 'saida' },
+    defaultValues: props.edicao ? props.valoresIniciais : { nome: '', tipo: 'saida' },
   });
 
-  async function enviar(dados: z.output<typeof criarCategoriaSchema>) {
-    const resultado = await enviarAcao(() => criarCategoria(dados), setError, ['nome', 'tipo']);
+  async function enviar(dados: Saida) {
+    if (!props.edicao) {
+      const resultado = await enviarAcao(() => criarCategoria(dados), setError, ['nome', 'tipo']);
+      if (resultado) {
+        mostrar('sucesso', resultado.mensagem);
+        reset();
+      }
+      return;
+    }
+
+    const corpo: Partial<Saida> = {
+      ...(dirtyFields.nome && { nome: dados.nome }),
+      ...(dirtyFields.tipo && { tipo: dados.tipo }),
+    };
+    if (Object.keys(corpo).length === 0) {
+      setError('root', { message: 'Nenhuma alteração para salvar.' });
+      return;
+    }
+
+    const resultado = await enviarAcao(() => props.acao(corpo), setError, ['nome', 'tipo']);
     if (resultado) {
       mostrar('sucesso', resultado.mensagem);
-      reset();
+      router.push('/categorias');
     }
   }
 
   return (
     <form noValidate className="flex flex-col gap-4" onSubmit={handleSubmit(enviar)}>
-      <h2 className="text-lg font-semibold">Nova categoria</h2>
+      {!props.edicao && <h2 className="text-lg font-semibold">Nova categoria</h2>}
       {errors.root?.message && <Alert tipo="erro">{errors.root.message}</Alert>}
       <div className="grid gap-4 sm:grid-cols-2">
-        <Input label="Nome" erro={errors.nome?.message} {...register('nome')} />
+        <Input label="Nome" autoComplete="off" erro={errors.nome?.message} {...register('nome')} />
         <Select label="Tipo" erro={errors.tipo?.message} {...register('tipo')}>
           {TIPOS.map((tipo) => (
             <option key={tipo} value={tipo}>
@@ -51,9 +81,16 @@ export function CategoriaForm() {
           ))}
         </Select>
       </div>
-      <Button type="submit" carregando={isSubmitting} className="self-start">
-        {isSubmitting ? 'Salvando…' : 'Criar categoria'}
-      </Button>
+      <div className="flex flex-wrap gap-2">
+        <Button type="submit" carregando={isSubmitting}>
+          {isSubmitting ? 'Salvando…' : props.edicao ? 'Salvar alterações' : 'Criar categoria'}
+        </Button>
+        {props.edicao && (
+          <LinkBotao href="/categorias" variante="secundario">
+            Cancelar
+          </LinkBotao>
+        )}
+      </div>
     </form>
   );
 }
