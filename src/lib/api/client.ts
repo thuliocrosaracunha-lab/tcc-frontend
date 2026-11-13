@@ -35,7 +35,7 @@ type Opcoes = {
 };
 
 function montarUrl(caminho: string, consulta?: Consulta): string {
-  const base = process.env.API_URL;
+  const base = process.env.API_URL || 'http://localhost:3000';
   if (!base) {
     throw new Error('A variável de ambiente API_URL não está definida.');
   }
