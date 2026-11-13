@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { Suspense } from 'react';
 import { excluirMeta } from '@/actions/metas';
 import { BotaoExcluir } from '@/components/forms/BotaoExcluir';
+import { LinkBotao } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
 import { Carregando } from '@/components/ui/Carregando';
 import { EmptyState } from '@/components/ui/EmptyState';
@@ -18,6 +19,7 @@ async function Lista() {
       <EmptyState
         titulo="Nenhuma meta cadastrada"
         descricao="As metas financeiras que você definir aparecerão aqui, com o progresso calculado a partir das suas movimentações."
+        acao={<LinkBotao href="/metas/nova">Criar primeira meta</LinkBotao>}
       />
     );
   }
@@ -29,12 +31,21 @@ async function Lista() {
           <Card className="flex flex-col gap-2">
             <div className="flex items-start justify-between gap-3">
               <h2 className="min-w-0 font-semibold break-words">{meta.nome}</h2>
-              <BotaoExcluir
-                acao={excluirMeta.bind(null, meta.id)}
-                rotulo={`Excluir meta ${meta.nome}`}
-                titulo="Excluir meta?"
-                descricao={`A meta "${meta.nome}" será removida. Suas movimentações não serão afetadas.`}
-              />
+              <div className="flex shrink-0 gap-2">
+                <LinkBotao
+                  variante="secundario"
+                  href={`/metas/${meta.id}/editar`}
+                  aria-label={`Editar meta ${meta.nome}`}
+                >
+                  Editar
+                </LinkBotao>
+                <BotaoExcluir
+                  acao={excluirMeta.bind(null, meta.id)}
+                  rotulo={`Excluir meta ${meta.nome}`}
+                  titulo="Excluir meta?"
+                  descricao={`A meta "${meta.nome}" será removida. Suas movimentações não serão afetadas.`}
+                />
+              </div>
             </div>
             <p className="text-sm text-slate-700">
               {ROTULOS_STATUS_META[meta.progresso.status]} · {formatarData(meta.dataInicio)} a{' '}
@@ -60,7 +71,10 @@ async function Lista() {
 export default function PaginaMetas() {
   return (
     <div className="flex flex-col gap-4">
-      <h1 className="text-2xl font-semibold">Metas</h1>
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <h1 className="text-2xl font-semibold">Metas</h1>
+        <LinkBotao href="/metas/nova">Nova meta</LinkBotao>
+      </div>
       <Suspense fallback={<Carregando />}>
         <Lista />
       </Suspense>

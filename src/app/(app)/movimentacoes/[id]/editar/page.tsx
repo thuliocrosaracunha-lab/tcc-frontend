@@ -9,17 +9,10 @@ import { listarCategorias } from '@/lib/api/categorias';
 import { ApiError } from '@/lib/api/client';
 import { buscarMovimentacao } from '@/lib/api/movimentacoes';
 import { queryDosFiltros } from '@/lib/filtros-movimentacao';
+import { lerId } from '@/lib/ids';
 import { filtrosMovimentacaoSchema } from '@/lib/validations/movimentacoes';
 
 export const metadata: Metadata = { title: 'Editar movimentação' };
-
-const MAIOR_ID = 2_147_483_647; // limite da coluna integer no banco
-
-function lerId(texto: string): number | null {
-  if (!/^[1-9]\d*$/.test(texto)) return null;
-  const id = Number(texto);
-  return id <= MAIOR_ID ? id : null;
-}
 
 async function buscarOuNaoEncontrada(id: number) {
   try {
