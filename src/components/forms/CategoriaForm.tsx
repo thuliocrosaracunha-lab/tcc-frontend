@@ -69,9 +69,9 @@ export function CategoriaForm(props: CategoriaFormProps) {
 
   return (
     <form noValidate className="flex flex-col gap-4" onSubmit={handleSubmit(enviar)}>
-      {!props.edicao && <h2 className="text-lg font-semibold">Nova categoria</h2>}
+      {!props.edicao && <h2 className="text-lg font-semibold tracking-tight">Nova categoria</h2>}
       {errors.root?.message && <Alert tipo="erro">{errors.root.message}</Alert>}
-      <div className="grid gap-4 sm:grid-cols-2">
+      <div className="grid gap-4 sm:grid-cols-[minmax(0,2fr)_minmax(0,1fr)]">
         <Input label="Nome" autoComplete="off" erro={errors.nome?.message} {...register('nome')} />
         <Select label="Tipo" erro={errors.tipo?.message} {...register('tipo')}>
           {TIPOS.map((tipo) => (

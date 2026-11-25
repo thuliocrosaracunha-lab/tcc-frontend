@@ -1,19 +1,22 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { RecuperarSenhaForm } from '@/components/forms/RecuperarSenhaForm';
-import { Card } from '@/components/ui/Card';
 
 export const metadata: Metadata = { title: 'Recuperar senha' };
 
 export default function PaginaRecuperarSenha() {
   return (
-    <Card className="flex w-full max-w-md flex-col gap-4">
-      <h1 className="text-2xl font-semibold">Recuperar senha</h1>
-      <p className="text-slate-700">Informe seu e-mail para receber um link de redefinição de senha.</p>
+    <div className="flex w-full max-w-sm animate-entrada flex-col gap-7">
+      <div className="flex flex-col gap-2">
+        <h1 className="text-[1.75rem] leading-tight font-semibold tracking-[-0.02em]">Recuperar senha</h1>
+        <p className="text-[15px] text-tinta-suave">Informe seu e-mail para receber um link de redefinição de senha.</p>
+      </div>
       <RecuperarSenhaForm />
-      <Link href="/login" className="text-sm underline">
-        Voltar para o login
-      </Link>
-    </Card>
+      <div className="border-t border-regua pt-5 text-sm">
+        <Link href="/login" className="link">
+          Voltar para o login
+        </Link>
+      </div>
+    </div>
   );
 }

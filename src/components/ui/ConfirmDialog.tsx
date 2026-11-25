@@ -43,15 +43,15 @@ export function ConfirmDialog({
         evento.preventDefault();
         if (!pendente) onCancelar();
       }}
-      className="m-auto w-[calc(100%-2rem)] max-w-md rounded-lg p-5 backdrop:bg-black/50"
+      className="m-auto w-[calc(100%-2rem)] max-w-md rounded-xl border border-regua bg-superficie p-6 text-tinta shadow-[0_24px_60px_-16px_rgb(24_36_30/0.45)] backdrop:bg-tinta/45"
     >
-      <h2 id={idTitulo} className="text-lg font-semibold">
+      <h2 id={idTitulo} className="text-lg font-semibold tracking-tight">
         {titulo}
       </h2>
-      <p id={idDescricao} className="mt-2 text-slate-700">
+      <p id={idDescricao} className="mt-2 text-sm leading-relaxed text-tinta-suave">
         {descricao}
       </p>
-      <div className="mt-5 flex flex-wrap justify-end gap-2">
+      <div className="mt-6 flex flex-wrap justify-end gap-2">
         <Button variante="secundario" onClick={onCancelar} disabled={pendente} autoFocus>
           Cancelar
         </Button>

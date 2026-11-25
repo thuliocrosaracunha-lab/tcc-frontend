@@ -104,25 +104,43 @@ export function MovimentacaoForm({
   }
 
   return (
-    <form noValidate className="flex flex-col gap-4" onSubmit={handleSubmit(enviar)}>
+    <form noValidate className="flex flex-col gap-5" onSubmit={handleSubmit(enviar)}>
       {errors.root?.message && <Alert tipo="erro">{errors.root.message}</Alert>}
 
       <fieldset>
-        <legend className="text-sm font-medium">Tipo</legend>
-        <div className="mt-2 flex gap-6">
-          {TIPOS.map((opcao) => (
-            <label key={opcao} className="flex min-h-6 items-center gap-2">
-              <input
-                type="radio"
-                name="tipo"
-                value={opcao}
-                checked={tipo === opcao}
-                onChange={() => trocarTipo(opcao)}
-                className="size-4"
-              />
-              {ROTULOS_TIPO[opcao]}
-            </label>
-          ))}
+        <legend className="text-[13px] font-medium text-tinta">Tipo</legend>
+        {/* Controle segmentado: os radios continuam no lugar, só ficam visualmente ocultos. */}
+        <div className="mt-1.5 grid grid-cols-2 gap-1 rounded-lg border border-regua-forte/40 bg-papel p-1">
+          {TIPOS.map((opcao) => {
+            const selecionado = tipo === opcao;
+            const entrada = opcao === 'entrada';
+            return (
+              <label
+                key={opcao}
+                className={`flex min-h-10 cursor-pointer items-center justify-center gap-2 rounded-md text-sm font-medium transition-[background-color,color,box-shadow] duration-150 has-focus-visible:outline-3 has-focus-visible:outline-offset-2 has-focus-visible:outline-foco ${
+                  selecionado
+                    ? `bg-superficie shadow-[0_1px_2px_rgb(24_36_30/0.12),0_0_0_1px_var(--color-regua)] ${entrada ? 'text-receita' : 'text-despesa'}`
+                    : 'text-tinta-suave hover:text-tinta'
+                }`}
+              >
+                <input
+                  type="radio"
+                  name="tipo"
+                  value={opcao}
+                  checked={selecionado}
+                  onChange={() => trocarTipo(opcao)}
+                  className="sr-only"
+                />
+                <span
+                  aria-hidden="true"
+                  className={`size-2 rounded-full transition-opacity ${entrada ? 'bg-receita' : 'bg-despesa'} ${
+                    selecionado ? '' : 'opacity-35'
+                  }`}
+                />
+                {ROTULOS_TIPO[opcao]}
+              </label>
+            );
+          })}
         </div>
       </fieldset>
 
@@ -153,7 +171,7 @@ export function MovimentacaoForm({
         {...register('descricao')}
       />
 
-      <div className="flex flex-wrap gap-2">
+      <div className="flex flex-wrap gap-2 border-t border-regua/70 pt-5">
         <Button type="submit" carregando={isSubmitting}>
           {isSubmitting ? 'Salvando…' : edicao ? 'Salvar alterações' : 'Salvar movimentação'}
         </Button>

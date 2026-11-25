@@ -4,6 +4,7 @@ import { Suspense } from 'react';
 import { atualizarCategoria } from '@/actions/categorias';
 import { CategoriaForm } from '@/components/forms/CategoriaForm';
 import { Alert } from '@/components/ui/Alert';
+import { CabecalhoPagina } from '@/components/ui/CabecalhoPagina';
 import { Card } from '@/components/ui/Card';
 import { Carregando } from '@/components/ui/Carregando';
 import { buscarCategoria } from '@/lib/api/categorias';
@@ -44,8 +45,8 @@ async function Formulario({ params }: Pick<PageProps<'/categorias/[id]/editar'>,
 
 export default function PaginaEditarCategoria({ params }: PageProps<'/categorias/[id]/editar'>) {
   return (
-    <div className="flex max-w-xl flex-col gap-4">
-      <h1 className="text-2xl font-semibold">Editar categoria</h1>
+    <div className="flex max-w-xl flex-col gap-6">
+      <CabecalhoPagina titulo="Editar categoria" />
       <Suspense fallback={<Carregando />}>
         <Formulario params={params} />
       </Suspense>

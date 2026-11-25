@@ -74,7 +74,7 @@ export function FiltrosMovimentacao({ categorias, filtros }: FiltrosMovimentacao
         id="filtros-movimentacoes"
         noValidate
         aria-label="Filtros de movimentações"
-        className={`${aberto ? 'flex' : 'hidden'} flex-col gap-4 rounded-lg border border-slate-300 bg-white p-4 md:flex`}
+        className={`${aberto ? 'flex' : 'hidden'} animate-entrada flex-col gap-4 rounded-lg border border-regua bg-superficie p-4 md:flex md:animate-none md:p-5`}
         onSubmit={handleSubmit(navegar)}
       >
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
@@ -106,11 +106,11 @@ export function FiltrosMovimentacao({ categorias, filtros }: FiltrosMovimentacao
             ))}
           </Select>
         </div>
-        <div className="flex flex-wrap gap-2">
+        <div className="flex flex-wrap gap-2 border-t border-regua/70 pt-4">
           <Button type="submit" carregando={pendente}>
             {pendente ? 'Filtrando…' : 'Filtrar'}
           </Button>
-          <Button variante="secundario" onClick={limpar} disabled={pendente}>
+          <Button variante="discreto" onClick={limpar} disabled={pendente}>
             Limpar filtros
           </Button>
         </div>

@@ -1,8 +1,76 @@
 @import "tailwindcss";
 
+/*
+ * Identidade visual "livro-caixa": papel pautado verde-claro, tinta verde-escura,
+ * valores em fonte monoespaçada e o duplo traço que a contabilidade usa sob os totais.
+ */
+@theme {
+  /* Superfícies */
+  --color-papel: #eef2ec; /* fundo da aplicação, como papel de livro contábil */
+  --color-superficie: #fbfcfa; /* áreas de conteúdo e campos */
+  --color-regua: #d3dcd1; /* pautas e divisórias */
+  --color-regua-forte: #7e8c80; /* bordas de campos (contraste mínimo de 3:1) */
+
+  /* Tinta */
+  --color-tinta: #18241e;
+  --color-tinta-suave: #4a5a50;
+
+  /* Marca */
+  --color-pinho: #1f4d3a;
+  --color-pinho-escuro: #163829;
+  --color-pinho-claro: #dce7da;
+
+  /* Significado financeiro */
+  --color-receita: #1d6a48;
+  --color-receita-clara: #e1eee5;
+  --color-receita-escura: #134a32;
+  --color-despesa: #a3303d;
+  --color-despesa-clara: #f6e3e4;
+  --color-despesa-escura: #7e2330;
+  --color-ambar: #9a6512;
+  --color-ambar-clara: #f5ead2;
+  --color-ambar-escura: #5e3d08;
+
+  /* Foco de teclado: azul, para se destacar do verde da marca */
+  --color-foco: #2457a6;
+
+  /* Movimento */
+  --animate-entrada: entrada 360ms cubic-bezier(0.2, 0.7, 0.2, 1) both;
+  --animate-traco: traco 700ms cubic-bezier(0.65, 0, 0.35, 1) 200ms both;
+  --animate-barra: barra 900ms cubic-bezier(0.2, 0.7, 0.2, 1) 150ms both;
+  --animate-aviso: aviso 240ms cubic-bezier(0.2, 0.7, 0.2, 1) both;
+
+  @keyframes entrada {
+    from {
+      opacity: 0;
+      transform: translateY(6px);
+    }
+  }
+
+  /* O duplo traço do total é "desenhado" da esquerda para a direita. */
+  @keyframes traco {
+    from {
+      transform: scaleX(0);
+    }
+  }
+
+  @keyframes barra {
+    from {
+      transform: scaleX(0);
+    }
+  }
+
+  @keyframes aviso {
+    from {
+      opacity: 0;
+      transform: translateY(8px) scale(0.98);
+    }
+  }
+}
+
 @theme inline {
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: var(--font-schibsted), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-spline-mono), ui-monospace, monospace;
 }
 
 :root {
@@ -10,13 +78,88 @@
 }
 
 body {
-  background: var(--color-slate-50);
-  color: var(--color-slate-900);
-  font-family: var(--font-sans), Arial, Helvetica, sans-serif;
+  background: var(--color-papel);
+  color: var(--color-tinta);
+  font-family: var(--font-sans);
+  font-feature-settings: "ss01";
+  -webkit-font-smoothing: antialiased;
+}
+
+::selection {
+  background: var(--color-pinho-claro);
+  color: var(--color-tinta);
 }
 
 /* RNF010: foco sempre visível, em qualquer elemento interativo. */
 :focus-visible {
-  outline: 3px solid var(--color-blue-700);
+  outline: 3px solid var(--color-foco);
   outline-offset: 2px;
+}
+
+/* Links de texto: sublinhado discreto que se completa no hover. */
+@utility link {
+  color: var(--color-pinho);
+  font-weight: 500;
+  text-decoration-line: underline;
+  text-decoration-color: color-mix(in oklab, var(--color-pinho) 35%, transparent);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 4px;
+  border-radius: 2px;
+  transition: text-decoration-color 150ms ease-out;
+
+  &:hover {
+    text-decoration-color: var(--color-pinho);
+  }
+}
+
+/* Valores em dinheiro: sempre na fonte mono, com algarismos alinhados. */
+@utility valor {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.01em;
+}
+
+/* Rótulo curto em caixa alta, usado acima de números e em cabeçalhos de tabela. */
+@utility rotulo {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-tinta-suave);
+}
+
+/* Diálogo de confirmação: entra com um leve aumento, sem chamar atenção demais. */
+dialog[open] {
+  animation: dialogo 180ms cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+
+dialog[open]::backdrop {
+  animation: fundo 180ms ease-out;
+}
+
+@keyframes dialogo {
+  from {
+    opacity: 0;
+    transform: translateY(6px) scale(0.98);
+  }
+}
+
+@keyframes fundo {
+  from {
+    opacity: 0;
+  }
+}
+
+/* Respeita quem prefere menos movimento: tudo aparece já no estado final. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  ::before,
+  ::after,
+  ::backdrop {
+    animation-duration: 0.01ms !important;
+    animation-delay: 0ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }

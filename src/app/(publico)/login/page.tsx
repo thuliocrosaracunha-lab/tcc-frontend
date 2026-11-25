@@ -4,7 +4,6 @@ import { Suspense } from 'react';
 import { LoginForm } from '@/components/forms/LoginForm';
 import { RecarregarAposEncerrar } from '@/components/layout/RecarregarAposEncerrar';
 import { Alert } from '@/components/ui/Alert';
-import { Card } from '@/components/ui/Card';
 import { AVISOS_ENCERRAMENTO, type MotivoEncerramento } from '@/lib/auth/constantes';
 
 export const metadata: Metadata = { title: 'Entrar' };
@@ -34,23 +33,26 @@ async function Avisos({ searchParams }: { searchParams: ParametrosBusca }) {
 
 export default function PaginaLogin({ searchParams }: PageProps<'/login'>) {
   return (
-    <Card className="flex w-full max-w-md flex-col gap-4">
-      <h1 className="text-2xl font-semibold">Entrar</h1>
+    <div className="flex w-full max-w-sm animate-entrada flex-col gap-7">
+      <div className="flex flex-col gap-2">
+        <h1 className="text-[1.75rem] leading-tight font-semibold tracking-[-0.02em]">Entrar</h1>
+        <p className="text-[15px] text-tinta-suave">Acesse sua conta para ver saldo, movimentações e metas.</p>
+      </div>
       <Suspense>
         <Avisos searchParams={searchParams} />
       </Suspense>
       <LoginForm />
-      <div className="flex flex-col gap-2 text-sm">
-        <Link href="/recuperar-senha" className="underline">
+      <div className="flex flex-col gap-3 border-t border-regua pt-5 text-sm">
+        <Link href="/recuperar-senha" className="link self-start">
           Esqueci minha senha
         </Link>
-        <p>
+        <p className="text-tinta-suave">
           Ainda não tem conta?{' '}
-          <Link href="/cadastro" className="underline">
+          <Link href="/cadastro" className="link">
             Cadastre-se
           </Link>
         </p>
       </div>
-    </Card>
+    </div>
   );
 }

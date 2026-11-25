@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation';
 import { Suspense } from 'react';
 import { atualizarMovimentacao } from '@/actions/movimentacoes';
 import { MovimentacaoForm } from '@/components/forms/MovimentacaoForm';
+import { CabecalhoPagina } from '@/components/ui/CabecalhoPagina';
 import { Card } from '@/components/ui/Card';
 import { Carregando } from '@/components/ui/Carregando';
 import { listarCategorias } from '@/lib/api/categorias';
@@ -62,8 +63,8 @@ async function Formulario({ params, searchParams }: Props) {
 
 export default function PaginaEditarMovimentacao({ params, searchParams }: PageProps<'/movimentacoes/[id]/editar'>) {
   return (
-    <div className="flex max-w-xl flex-col gap-4">
-      <h1 className="text-2xl font-semibold">Editar movimentação</h1>
+    <div className="flex max-w-xl flex-col gap-6">
+      <CabecalhoPagina titulo="Editar movimentação" />
       <Suspense fallback={<Carregando />}>
         <Formulario params={params} searchParams={searchParams} />
       </Suspense>

@@ -3,6 +3,7 @@ import { Suspense } from 'react';
 import { criarMovimentacao } from '@/actions/movimentacoes';
 import { MovimentacaoForm } from '@/components/forms/MovimentacaoForm';
 import { LinkBotao } from '@/components/ui/Button';
+import { CabecalhoPagina } from '@/components/ui/CabecalhoPagina';
 import { Card } from '@/components/ui/Card';
 import { Carregando } from '@/components/ui/Carregando';
 import { EmptyState } from '@/components/ui/EmptyState';
@@ -38,8 +39,8 @@ async function Formulario() {
 
 export default function PaginaNovaMovimentacao() {
   return (
-    <div className="flex max-w-xl flex-col gap-4">
-      <h1 className="text-2xl font-semibold">Nova movimentação</h1>
+    <div className="flex max-w-xl flex-col gap-6">
+      <CabecalhoPagina titulo="Nova movimentação" />
       <Suspense fallback={<Carregando />}>
         <Formulario />
       </Suspense>

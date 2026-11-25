@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useTransition } from 'react';
+import { useState, useTransition, type ComponentProps } from 'react';
 import { Button } from '@/components/ui/Button';
 import { ConfirmDialog } from '@/components/ui/ConfirmDialog';
 import { useToast } from '@/components/ui/Toast';
@@ -14,10 +14,21 @@ type BotaoExcluirProps = {
   titulo: string;
   descricao: string;
   textoBotao?: string;
+  /** Aparência do botão que abre a confirmação. Nas listas, discreto e pequeno. */
+  variante?: ComponentProps<typeof Button>['variante'];
+  tamanho?: ComponentProps<typeof Button>['tamanho'];
 };
 
 // UC006: toda exclusão passa por confirmação.
-export function BotaoExcluir({ acao, rotulo, titulo, descricao, textoBotao = 'Excluir' }: BotaoExcluirProps) {
+export function BotaoExcluir({
+  acao,
+  rotulo,
+  titulo,
+  descricao,
+  textoBotao = 'Excluir',
+  variante = 'discretoPerigo',
+  tamanho = 'pequeno',
+}: BotaoExcluirProps) {
   const { mostrar } = useToast();
   const [aberto, setAberto] = useState(false);
   const [pendente, iniciar] = useTransition();
@@ -36,7 +47,12 @@ export function BotaoExcluir({ acao, rotulo, titulo, descricao, textoBotao = 'Ex
 
   return (
     <>
-      <Button variante="secundario" aria-label={rotulo} onClick={() => setAberto(true)}>
+      <Button
+        variante={variante}
+        tamanho={tamanho}
+        aria-label={rotulo}
+        onClick={() => setAberto(true)}
+      >
         {textoBotao}
       </Button>
       <ConfirmDialog

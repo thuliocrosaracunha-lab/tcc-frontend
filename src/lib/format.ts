@@ -18,6 +18,22 @@ export function formatarMoeda(valor: number): string {
   return moeda.format(valor);
 }
 
+const percentual = new Intl.NumberFormat('pt-BR', { maximumFractionDigits: 2 });
+
+/** 34.35 → "34,35%" */
+export function formatarPercentual(valor: number): string {
+  return `${percentual.format(valor)}%`;
+}
+
+const mesPorExtenso = new Intl.DateTimeFormat('pt-BR', { month: 'long', year: 'numeric', timeZone: 'UTC' });
+
+/** AAAA-MM-DD → "Novembro de 2026" */
+export function formatarMes(iso: string): string {
+  const [ano, mes] = iso.split('-').map(Number);
+  const texto = mesPorExtenso.format(new Date(Date.UTC(ano, mes - 1, 1)));
+  return texto.charAt(0).toUpperCase() + texto.slice(1);
+}
+
 // As conversões de data trabalham sobre o texto de propósito: new Date('AAAA-MM-DD')
 // é interpretado como UTC e mostraria o dia anterior no fuso do Brasil.
 

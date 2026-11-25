@@ -4,6 +4,7 @@ import { Suspense } from 'react';
 import { excluirConta } from '@/actions/usuarios';
 import { BotaoExcluir } from '@/components/forms/BotaoExcluir';
 import { PerfilForm } from '@/components/forms/PerfilForm';
+import { CabecalhoPagina } from '@/components/ui/CabecalhoPagina';
 import { Card } from '@/components/ui/Card';
 import { Carregando } from '@/components/ui/Carregando';
 import { buscarUsuario } from '@/lib/api/usuarios';
@@ -28,15 +29,19 @@ async function Dados() {
 
 export default function PaginaPerfil() {
   return (
-    <div className="flex max-w-xl flex-col gap-4">
-      <h1 className="text-2xl font-semibold">Perfil</h1>
+    <div className="flex max-w-xl flex-col gap-6">
+      <CabecalhoPagina titulo="Perfil" />
       <Suspense fallback={<Carregando />}>
         <Dados />
       </Suspense>
-      <section className="flex flex-col items-start gap-2">
-        <h2 className="text-lg font-semibold">Excluir conta</h2>
-        <p className="text-slate-700">Sua conta e todos os seus dados serão excluídos definitivamente.</p>
+      <section className="flex flex-col items-start gap-3 rounded-lg border border-despesa/25 bg-superficie p-5">
+        <h2 className="text-[17px] font-semibold tracking-tight">Excluir conta</h2>
+        <p className="text-sm leading-relaxed text-tinta-suave">
+          Sua conta e todos os seus dados serão excluídos definitivamente.
+        </p>
         <BotaoExcluir
+          variante="perigoSuave"
+          tamanho="normal"
           acao={excluirConta}
           rotulo="Excluir minha conta"
           textoBotao="Excluir minha conta"

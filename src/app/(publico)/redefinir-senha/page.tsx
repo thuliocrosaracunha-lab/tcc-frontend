@@ -3,7 +3,6 @@ import Link from 'next/link';
 import { Suspense } from 'react';
 import { RedefinirSenhaForm } from '@/components/forms/RedefinirSenhaForm';
 import { Alert } from '@/components/ui/Alert';
-import { Card } from '@/components/ui/Card';
 import { Carregando } from '@/components/ui/Carregando';
 import { TOKEN_REDEFINICAO_REGEX } from '@/lib/validations/auth';
 
@@ -16,7 +15,7 @@ async function Conteudo({ searchParams }: Pick<PageProps<'/redefinir-senha'>, 's
     return (
       <>
         <Alert tipo="erro">Link inválido ou expirado.</Alert>
-        <Link href="/recuperar-senha" className="text-sm underline">
+        <Link href="/recuperar-senha" className="link self-start text-sm">
           Solicitar um novo link
         </Link>
       </>
@@ -28,14 +27,19 @@ async function Conteudo({ searchParams }: Pick<PageProps<'/redefinir-senha'>, 's
 
 export default function PaginaRedefinirSenha({ searchParams }: PageProps<'/redefinir-senha'>) {
   return (
-    <Card className="flex w-full max-w-md flex-col gap-4">
-      <h1 className="text-2xl font-semibold">Redefinir senha</h1>
+    <div className="flex w-full max-w-sm animate-entrada flex-col gap-7">
+      <div className="flex flex-col gap-2">
+        <h1 className="text-[1.75rem] leading-tight font-semibold tracking-[-0.02em]">Redefinir senha</h1>
+        <p className="text-[15px] text-tinta-suave">Escolha uma nova senha com pelo menos 6 caracteres.</p>
+      </div>
       <Suspense fallback={<Carregando />}>
         <Conteudo searchParams={searchParams} />
       </Suspense>
-      <Link href="/login" className="text-sm underline">
-        Voltar para o login
-      </Link>
-    </Card>
+      <div className="border-t border-regua pt-5 text-sm">
+        <Link href="/login" className="link">
+          Voltar para o login
+        </Link>
+      </div>
+    </div>
   );
 }

@@ -90,10 +90,10 @@ export function MetaForm({ valoresIniciais, acao, edicao = false }: MetaFormProp
         <Input label="Início" type="date" erro={errors.dataInicio?.message} {...register('dataInicio')} />
         <Input label="Fim" type="date" erro={errors.dataFim?.message} {...register('dataFim')} />
       </div>
-      <p className="text-sm text-slate-700">
+      <p className="rounded-md bg-papel px-3.5 py-2.5 text-[13px] leading-relaxed text-tinta-suave">
         O progresso soma as receitas e desconta as despesas registradas dentro do período.
       </p>
-      <div className="flex flex-wrap gap-2">
+      <div className="flex flex-wrap gap-2 border-t border-regua/70 pt-5">
         <Button type="submit" carregando={isSubmitting}>
           {isSubmitting ? 'Salvando…' : edicao ? 'Salvar alterações' : 'Criar meta'}
         </Button>

@@ -41,24 +41,28 @@ export function ToastProvider({ children }: { children: ReactNode }) {
       {/* A região fica sempre no DOM para os leitores de tela anunciarem as mudanças. */}
       <div
         aria-live="polite"
-        className="pointer-events-none fixed inset-x-4 bottom-4 z-50 flex flex-col items-center gap-2 sm:left-auto sm:w-96"
+        className="pointer-events-none fixed inset-x-4 bottom-4 z-50 flex flex-col items-center gap-2 sm:right-6 sm:bottom-6 sm:left-auto sm:w-96"
       >
         {toasts.map((toast) => (
           <div
             key={toast.id}
             role={toast.tipo === 'erro' ? 'alert' : 'status'}
-            className={`pointer-events-auto flex w-full items-start justify-between gap-3 rounded-md px-4 py-3 text-sm text-white shadow-lg ${
-              toast.tipo === 'erro' ? 'bg-red-800' : 'bg-emerald-900'
-            }`}
+            className="pointer-events-auto flex w-full animate-aviso items-start gap-3 rounded-lg bg-tinta px-4 py-3 text-sm text-papel shadow-[0_16px_40px_-12px_rgb(24_36_30/0.55)]"
           >
-            <span>{toast.mensagem}</span>
+            <span
+              aria-hidden="true"
+              className={`mt-1.5 size-2 shrink-0 rounded-full ${toast.tipo === 'erro' ? 'bg-[#f08a93]' : 'bg-[#7fcfa2]'}`}
+            />
+            <span className="flex-1 leading-relaxed">{toast.mensagem}</span>
             <button
               type="button"
               aria-label="Fechar aviso"
               onClick={() => remover(toast.id)}
-              className="rounded px-1 leading-none"
+              className="-mr-1 rounded px-1.5 leading-none text-papel/70 transition-colors hover:text-papel"
             >
-              <span aria-hidden="true">×</span>
+              <span aria-hidden="true" className="text-lg">
+                ×
+              </span>
             </button>
           </div>
         ))}

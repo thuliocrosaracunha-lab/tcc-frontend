@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation';
 import { Suspense } from 'react';
 import { atualizarMeta } from '@/actions/metas';
 import { MetaForm } from '@/components/forms/MetaForm';
+import { CabecalhoPagina } from '@/components/ui/CabecalhoPagina';
 import { Card } from '@/components/ui/Card';
 import { Carregando } from '@/components/ui/Carregando';
 import { ApiError } from '@/lib/api/client';
@@ -44,8 +45,8 @@ async function Formulario({ params }: Pick<PageProps<'/metas/[id]/editar'>, 'par
 
 export default function PaginaEditarMeta({ params }: PageProps<'/metas/[id]/editar'>) {
   return (
-    <div className="flex max-w-xl flex-col gap-4">
-      <h1 className="text-2xl font-semibold">Editar meta</h1>
+    <div className="flex max-w-xl flex-col gap-6">
+      <CabecalhoPagina titulo="Editar meta" />
       <Suspense fallback={<Carregando />}>
         <Formulario params={params} />
       </Suspense>

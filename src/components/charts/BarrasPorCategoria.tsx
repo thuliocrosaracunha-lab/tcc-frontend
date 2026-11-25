@@ -5,10 +5,15 @@ import { Bar, BarChart, LabelList, ResponsiveContainer, Tooltip, XAxis, YAxis } 
 import { formatarMoeda } from '@/lib/format';
 import type { CategoriaResumo } from '@/types';
 
-// Cores validadas (dataviz/validate_palette.js) contra o fundo branco dos cards:
-// passam em contraste, separação para daltonismo e visão normal.
-export const COR_RECEITAS = '#2a78d6';
-export const COR_DESPESAS = '#eb6834';
+// As mesmas cores de receita e despesa usadas em todo o sistema (globals.css).
+// Cada gráfico mostra uma série só, identificada pelo título, então as duas cores
+// nunca precisam ser comparadas lado a lado.
+export const COR_RECEITAS = '#1d6a48';
+export const COR_DESPESAS = '#a3303d';
+
+const COR_TEXTO = '#4a5a50';
+const COR_REGUA = '#d3dcd1';
+const COR_DESTAQUE = '#eef2ec';
 
 /** Acima disso, as menores viram "Outras", para o gráfico não virar uma lista longa. */
 const MAXIMO_DE_BARRAS = 7;
@@ -43,10 +48,10 @@ function Dica({ active, payload }: { active?: boolean; payload?: { payload: Linh
 
   // O valor vem em destaque e o nome completo da categoria em segundo plano.
   return (
-    <div className="rounded-md border border-slate-300 bg-white px-3 py-2 text-sm shadow-md">
-      <p className="font-semibold text-slate-900">{formatarMoeda(linha.total)}</p>
-      <p className="text-slate-700">{linha.nome}</p>
-      <p className="text-slate-700">
+    <div className="rounded-md bg-tinta px-3 py-2 text-sm text-papel shadow-[0_12px_32px_-10px_rgb(24_36_30/0.5)]">
+      <p className="valor font-medium">{formatarMoeda(linha.total)}</p>
+      <p className="text-papel/75">{linha.nome}</p>
+      <p className="text-[13px] text-papel/75">
         {linha.quantidade === 1 ? '1 movimentação' : `${linha.quantidade} movimentações`}
       </p>
     </div>
@@ -66,15 +71,21 @@ type BarrasPorCategoriaProps = {
 export function BarrasPorCategoria({ titulo, categorias, cor, vazio }: BarrasPorCategoriaProps) {
   const idTitulo = useId();
   const linhas = agrupar(categorias);
+  const total = categorias.reduce((soma, c) => soma + c.total, 0);
 
   return (
-    <section aria-labelledby={idTitulo} className="flex flex-col gap-3">
-      <h3 id={idTitulo} className="font-semibold">
-        {titulo}
-      </h3>
+    <section aria-labelledby={idTitulo} className="flex flex-col gap-4">
+      <div className="flex items-baseline justify-between gap-3">
+        <h3 id={idTitulo} className="font-semibold">
+          {titulo}
+        </h3>
+        {linhas.length > 0 && <span className="valor text-sm text-tinta-suave">{formatarMoeda(total)}</span>}
+      </div>
 
       {linhas.length === 0 ? (
-        <p className="text-sm text-slate-700">{vazio}</p>
+        <p className="rounded-md border border-dashed border-regua px-4 py-6 text-center text-sm text-tinta-suave">
+          {vazio}
+        </p>
       ) : (
         <>
           {/* O gráfico é a versão visual; a tabela abaixo traz os mesmos valores para leitores de tela. */}
@@ -86,8 +97,8 @@ export function BarrasPorCategoria({ titulo, categorias, cor, vazio }: BarrasPor
                 // O gráfico fica oculto para leitores de tela (a tabela tem os valores), então
                 // não pode ter um elemento focável pelo teclado.
                 accessibilityLayer={false}
-                margin={{ top: 0, right: 96, bottom: 0, left: 0 }}
-                barCategoryGap={8}
+                margin={{ top: 0, right: 100, bottom: 0, left: 0 }}
+                barCategoryGap={9}
               >
                 <XAxis type="number" hide domain={[0, 'dataMax']} />
                 <YAxis
@@ -95,40 +106,43 @@ export function BarrasPorCategoria({ titulo, categorias, cor, vazio }: BarrasPor
                   dataKey="nome"
                   width={128}
                   tickLine={false}
-                  axisLine={{ stroke: '#cbd5e1' }}
+                  axisLine={{ stroke: COR_REGUA }}
                   tickFormatter={encurtar}
-                  tick={{ fill: '#334155', fontSize: 13 }}
+                  tick={{ fill: COR_TEXTO, fontSize: 13 }}
                 />
-                <Tooltip content={<Dica />} cursor={{ fill: '#f1f5f9' }} />
-                <Bar dataKey="total" fill={cor} barSize={20} radius={[0, 4, 4, 0]} isAnimationActive={false}>
+                <Tooltip content={<Dica />} cursor={{ fill: COR_DESTAQUE }} />
+                <Bar dataKey="total" fill={cor} barSize={18} radius={[0, 3, 3, 0]} isAnimationActive={false}>
                   <LabelList
                     dataKey="total"
                     position="right"
                     formatter={(valor) => formatarMoeda(Number(valor))}
-                    style={{ fill: '#334155', fontSize: 13 }}
+                    style={{ fill: COR_TEXTO, fontSize: 12, fontFamily: 'var(--font-mono)' }}
                   />
                 </Bar>
               </BarChart>
             </ResponsiveContainer>
           </div>
 
-          <details className="text-sm">
-            <summary className="cursor-pointer text-slate-700 underline">Ver valores em tabela</summary>
-            <table className="mt-2 w-full text-left">
+          <details className="group text-sm">
+            <summary className="link cursor-pointer list-none text-[13px] [&::-webkit-details-marker]:hidden">
+              <span className="group-open:hidden">Ver valores em tabela</span>
+              <span className="hidden group-open:inline">Ocultar tabela</span>
+            </summary>
+            <table className="mt-3 w-full text-left">
               <caption className="sr-only">{titulo}</caption>
               <thead>
-                <tr className="border-b border-slate-300">
-                  <th scope="col" className="py-1 pr-2">Categoria</th>
-                  <th scope="col" className="py-1 pr-2 text-right">Total</th>
-                  <th scope="col" className="py-1 text-right">Movimentações</th>
+                <tr className="border-b border-regua">
+                  <th scope="col" className="rotulo py-2 pr-2">Categoria</th>
+                  <th scope="col" className="rotulo py-2 pr-2 text-right">Total</th>
+                  <th scope="col" className="rotulo py-2 text-right">Movimentações</th>
                 </tr>
               </thead>
               <tbody>
                 {linhas.map((linha) => (
-                  <tr key={linha.nome} className="border-b border-slate-200 last:border-0">
-                    <td className="py-1 pr-2 break-words">{linha.nome}</td>
-                    <td className="py-1 pr-2 text-right tabular-nums whitespace-nowrap">{formatarMoeda(linha.total)}</td>
-                    <td className="py-1 text-right tabular-nums">{linha.quantidade}</td>
+                  <tr key={linha.nome} className="border-b border-regua/70 last:border-0">
+                    <td className="py-2 pr-2 break-words">{linha.nome}</td>
+                    <td className="valor py-2 pr-2 text-right whitespace-nowrap">{formatarMoeda(linha.total)}</td>
+                    <td className="valor py-2 text-right">{linha.quantidade}</td>
                   </tr>
                 ))}
               </tbody>

@@ -63,8 +63,10 @@ export function PerfilForm({ usuario }: { usuario: Usuario }) {
         erro={errors.email?.message}
         {...register('email')}
       />
+      <div className="mt-2 border-t border-regua/70 pt-5">
       <fieldset className="flex flex-col gap-4">
-        <legend className="text-sm text-slate-700">
+        <legend className="mb-4 text-[13px] text-tinta-suave">
+          <span className="mb-1 block text-[15px] font-semibold text-tinta">Alterar senha</span>
           Para manter a senha atual, deixe os campos abaixo em branco.
         </legend>
         <Input
@@ -82,7 +84,8 @@ export function PerfilForm({ usuario }: { usuario: Usuario }) {
           {...register('confirmacaoSenha')}
         />
       </fieldset>
-      <Button type="submit" carregando={isSubmitting} className="self-start">
+      </div>
+      <Button type="submit" carregando={isSubmitting} className="mt-1 self-start">
         {isSubmitting ? 'Salvando…' : 'Salvar alterações'}
       </Button>
     </form>
